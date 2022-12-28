@@ -1,5 +1,3 @@
-# Could also use a heap here for part 2.
-
 with open("../inputs/day_one_input.txt", "r") as file:
 	calories = []
 	current_elf = 0

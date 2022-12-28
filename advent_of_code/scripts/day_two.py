@@ -1,11 +1,3 @@
-# A means opponent plays rock
-# B means opponent plays paper
-# C means opponent plays scissors
-
-# X means you need to lose
-# Y means you need to draw
-# Z means you need to win
-
 points = {("A", "X") : 3,
 		  ("A", "Y") : 4,
 		  ("A", "Z") : 8,

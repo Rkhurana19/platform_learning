@@ -15,35 +15,66 @@ with open("../inputs/day_eight_input.txt", "r") as file:
 
 num_rows = len(forest)
 num_cols = len(forest[0])
-visibility = [[0] * num_cols for _ in range(num_rows)]
+
+visibility = [[1] * num_cols for _ in range(num_rows)]
 
 for row in range(num_rows):
-    left_max = -1
-    right_max = -1
+    monotone_stack = [0]
 
-    for col in range(num_cols):
-        if forest[row][col] > left_max:
-            visibility[row][col] = 1
-            left_max = forest[row][col]
+    for col in range(1, num_cols):
+        while (monotone_stack and forest[row][col] 
+                >= forest[row][monotone_stack[-1]]):
+            popped_index = monotone_stack.pop()
+            visibility[row][popped_index] *= col - popped_index
+
+        monotone_stack.append(col)
     
-    for col in range(num_cols, 0, -1):
-        if forest[row][col - 1] > right_max:
-            visibility[row][col - 1] = 1
-            right_max = forest[row][col - 1]
+    while monotone_stack:
+        popped_index = monotone_stack.pop()
+        visibility[row][popped_index] *= num_cols - popped_index - 1
+    
+    monotone_stack = [num_cols - 1]
+
+    for col in range(num_cols - 2, -1, -1):
+        while (monotone_stack and forest[row][col] 
+                >= forest[row][monotone_stack[-1]]):
+            popped_index = monotone_stack.pop()
+            visibility[row][popped_index] *= popped_index - col
+
+        monotone_stack.append(col)
+    
+    while monotone_stack:
+        popped_index = monotone_stack.pop()
+        visibility[row][popped_index] *= popped_index
 
 for col in range(num_cols):
-    top_max = -1
-    bottom_max = -1
+    monotone_stack = [0]
 
-    for row in range(num_rows):
-        if forest[row][col] > top_max:
-            visibility[row][col] = 1
-            top_max = forest[row][col]
+    for row in range(1, num_rows):
+        while (monotone_stack and forest[row][col]
+                >= forest[monotone_stack[-1]][col]):
+            popped_index = monotone_stack.pop()
+            visibility[popped_index][col] *= row - popped_index
+        
+        monotone_stack.append(row)
     
-    for row in range(num_rows, 0, -1):
-        if forest[row - 1][col] > bottom_max:
-            visibility[row - 1][col] = 1
-            bottom_max = forest[row - 1][col]
+    while monotone_stack:
+        popped_index = monotone_stack.pop()
+        visibility[popped_index][col] *= num_rows - popped_index - 1
+
+    monotone_stack = [num_rows - 1]
+
+    for row in range(num_rows - 2, -1, -1):
+        while (monotone_stack and forest[row][col]
+                >= forest[monotone_stack[-1]][col]):
+            popped_index = monotone_stack.pop()
+            visibility[popped_index][col] *= popped_index - row
+
+        monotone_stack.append(row)
     
-visible_trees = sum([sum(row) for row in visibility])
-print("Visible trees: " + str(visible_trees))
+    while monotone_stack:
+        popped_index = monotone_stack.pop()
+        visibility[popped_index][col] *= popped_index
+
+max_scenic_score = max([max(row) for row in visibility])
+print("Max scenic score: " + str(max_scenic_score))
